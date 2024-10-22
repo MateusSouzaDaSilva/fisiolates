@@ -17,6 +17,9 @@ Principais ferramentas utilizadas:
 
 Desenvolvido por:
 
-| [<img loading="lazy" src="https://avatars.githubusercontent.com/u/141969632?v=4" width=115><br><sub>Éverton Simplício</sub>](https://github.com/EvertonSimplicio1710) |  [<img loading="lazy" src="https://avatars.githubusercontent.com/u/103540716?v=4" width=115><br><sub>Lucas Pisciotta</sub>](https://github.com/Lucasvi1998) |  [<img loading="lazy" src="https://avatars.githubusercontent.com/u/69120373?v=4" width=115><br><sub>Mateus Silva</sub>](https://github.com/MateusSouzaDaSilva) | [<img loading="lazy" src="https://avatars.githubusercontent.com/u/80491448?v=4" width=115><br><sub>Maxwel Barbosa</sub>](https://github.com/maxwelbarbosaa) |
+| [<img loading="lazy" src="https://avatars.githubusercontent.com/u/141969632?v=4" width=115><br><sub>Éverton Simplício</sub>](https://github.com/EvertonSimplicio1710) | 
+ [<img loading="lazy" src="https://avatars.githubusercontent.com/u/103540716?v=4" width=115><br><sub>Lucas Pisciotta</sub>](https://github.com/Lucasvi1998) | 
+  [<img loading="lazy" src="https://avatars.githubusercontent.com/u/69120373?v=4" width=115><br><sub>Mateus Silva</sub>](https://github.com/MateusSouzaDaSilva) |
+   [<img loading="lazy" src="https://avatars.githubusercontent.com/u/80491448?v=4" width=115><br><sub>Maxwel Barbosa</sub>](https://github.com/maxwelbarbosaa) |
 
 
