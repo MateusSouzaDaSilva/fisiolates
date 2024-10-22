@@ -32,7 +32,9 @@ Principais ferramentas utilizadas:
 [TailwindCSS](https://tailwindcss.com/)
 [Bootstrap](https://getbootstrap.com/)
 
-Desenvolvido por:
+## Link da demostração
+
+https://www.youtube.com/watch?v=G13qABBe7-E
 
 # Autores
 
