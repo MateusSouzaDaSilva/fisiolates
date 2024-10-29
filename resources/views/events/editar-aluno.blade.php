@@ -86,13 +86,14 @@
             <div class="alert alert-danger">{{ $message }}</div>
             @enderror
         </div>
-        <div class="btn-list">
-            <a href="/avaliacao/{{ $aluno->id }}" class="btn-fisio"> Adicionar avaliação</a>
+        <div class="btn-list">    
+        <input type="submit" value="Atualizar aluno" class="btn-fisio" id="send">
+        <a href="/avaliacao/{{ $aluno->id }}" class="btn-fisio"> Adicionar avaliação</a>
         @if($avaliacao)
         <a href="/avaliacao/edit/{{ $aluno->id }}/{{ $avaliacao->id }}" class="btn-fisio">Exibir avaliação</a>
-        <input type="submit" value="Atualizar aluno" class="btn-fisio" id="send">
         @endif
         </div>
+        
     </form>
 </div>
 
