@@ -14,13 +14,13 @@ class AgendamentoController extends Controller
     public function index()
     {
         $agendamentos = Agendamento::with('aluno')->get();
-        $alunos = Aluno::all();
+        $alunos = Aluno::all()->sortBy('alu_nome');
         $days = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira'];
         $hours = range(7, 20);
         return view('welcome', compact('agendamentos', 'alunos', 'days', 'hours'));
     }
 
-   
+
     public function update(Request $request, $id)
 {
     // Obtém os dados do agendamento existente
@@ -48,7 +48,7 @@ class AgendamentoController extends Controller
     return redirect()->back()->with('success', 'Agendamento atualizado com sucesso!');
 }
 
-    
+
 public function store(Request $request)
 {
     // Verifica se o aluno já está agendado no mesmo dia e horário
@@ -92,7 +92,7 @@ public function store(Request $request)
     return redirect()->back()->with('success', 'Evento adicionado com sucesso!');
 }
 
-    
+
 
     public function destroy($id)
     {

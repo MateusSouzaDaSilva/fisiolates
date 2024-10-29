@@ -122,7 +122,7 @@
                             <label for="selectedEvent">Selecionar Aluno:</label>
                             <select name="selectedEvent" id="selectedEvent" class="form-control select2" required>
                                 <option value="" disabled selected>Selecione um aluno</option>
-                                @foreach ($agendamentos as $agendamento)
+                                @foreach ($agendamentos->sortBy('aluno.alu_nome') as $agendamento)
                                     <option value="{{ $agendamento->id }}">
                                         {{ $agendamento->aluno->alu_nome }} {{ $agendamento->aluno->alu_sobrenome }}-
                                         {{ $agendamento->age_day }} - {{ $agendamento->age_time }}

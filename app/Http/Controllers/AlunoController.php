@@ -17,20 +17,27 @@ class AlunoController extends Controller
     //     $alunos = Aluno::pluck('alu_nome', 'id');
     //     $agendamentos = Agendamento::with('aluno')->get();
     //     return view('welcome', compact('agendamentos', 'alunos'));
-        
+
     // }
 
     public function exibir() {
 
         $currentDate = Carbon::now();
-    
-        $validAlunos = Aluno::where('alu_dtvencimento', '>=', $currentDate)->get();
-        $expiredAlunos = Aluno::where('alu_dtvencimento', '<', $currentDate)->get();
+
+        $alunos =  Aluno::all()->sortBy('alu_nome');
+
+        $validAlunos = $alunos->filter(function ($aluno) use ($currentDate) {
+            return Carbon::parse($aluno->alu_dtvencimento)->gte($currentDate);
+        });
+
+        $expiredAlunos = $alunos->filter(function ($aluno) use ($currentDate) {
+            return Carbon::parse($aluno->alu_dtvencimento)->lt($currentDate);
+        });
 
         return view("lista-alunos", compact('validAlunos', 'expiredAlunos'));
     }
 
-   
+
 
     public function create() {
         return view("events.registrar-aluno");
@@ -47,7 +54,7 @@ class AlunoController extends Controller
             'dtvencimento.required' => 'O campo Data de Vencimento é obrigatório.',
             'dtvencimento.date' => 'O campo Data de Vencimento deve ser uma data válida.',
         ];
-    
+
 
         $request->validate([
             'nome' => 'required',
@@ -57,7 +64,7 @@ class AlunoController extends Controller
             'dtnasc' => 'required|date',
             'dtvencimento' => 'required|date'
         ], $message);
-        
+
         $aluno = new Aluno();
 
         $aluno->alu_nome = $request->nome;
@@ -71,14 +78,14 @@ class AlunoController extends Controller
         $aluno->alu_sexo = $request->sexo;
         $aluno->alu_dtnasc = $request->dtnasc;
         $aluno->alu_dtvencimento = $request->dtvencimento;
-        
+
         $aluno->save();
 
         return redirect('/')->with('msg', 'Aluno adicionado com sucesso!');
-            
+
     }
 
-  
+
 
     public function edit($id) {
 
@@ -98,10 +105,10 @@ class AlunoController extends Controller
         try {
             // Encontre o aluno pelo ID
             $aluno = Aluno::findOrFail($request->id);
-    
+
             // Atualize os campos do aluno com os dados do formulário
             $aluno->update($request->all());
-    
+
             // Redirecione para a lista de alunos com uma mensagem de sucesso
             return redirect('lista-alunos')->with('success', 'Aluno editado com sucesso!');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
