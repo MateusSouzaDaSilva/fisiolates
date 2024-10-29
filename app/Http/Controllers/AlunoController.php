@@ -41,13 +41,11 @@ class AlunoController extends Controller
         $message = [
             'nome.required' => 'O campo Nome é obrigatório.',
             'cpf.required' => 'O campo CPF é obrigatório.',
-            'endereco.required' => 'O campo Endereço é obrigatório.',
-            'bairro.required' => 'O campo Bairro é obrigatório.',
-            'cidade.required' => 'O campo Cidade é obrigatório.',
             'celular.required' => 'O campo Celular é obrigatório.',
-            'sexo.required' => 'O campo Sexo é obrigatório.',
             'dtnasc.required' => 'O campo Data de Nascimento é obrigatório.',
             'dtnasc.date' => 'O campo Data de Nascimento deve ser uma data válida.',
+            'dtvencimento.required' => 'O campo Data de Vencimento é obrigatório.',
+            'dtvencimento.date' => 'O campo Data de Vencimento deve ser uma data válida.',
         ];
     
 
@@ -55,12 +53,9 @@ class AlunoController extends Controller
             'nome' => 'required',
             'sobrenome' => 'required',
             'cpf' => 'required',
-            'endereco' => 'required',
-            'bairro' => 'required',
-            'cidade' => 'required',
             'celular' => 'required',
-            'sexo' => 'required',
             'dtnasc' => 'required|date',
+            'dtvencimento' => 'required|date'
         ], $message);
         
         $aluno = new Aluno();

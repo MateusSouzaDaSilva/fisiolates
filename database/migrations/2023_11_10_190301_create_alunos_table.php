@@ -17,12 +17,12 @@ return new class extends Migration
             $table->string('alu_nome');
             $table->string('alu_sobrenome');
             $table->string('alu_cpf')->unique();
-            $table->string('alu_end');
-            $table->string('alu_bairro');
-            $table->string('alu_cidade');
-            $table->string('alu_fone', 14);
+            $table->string('alu_end')->nullable();
+            $table->string('alu_bairro')->nullable();
+            $table->string('alu_cidade')->nullable();
+            $table->string('alu_fone', 14)->nullable();
             $table->string('alu_celular', 15);
-            $table->char('alu_sexo', 1);
+            $table->char('alu_sexo', 1)->nullable();
             $table->date('alu_dtnasc');
             $table->char('alu_ativo', 3)->default('sim');
             

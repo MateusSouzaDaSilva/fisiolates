@@ -10,40 +10,7 @@ class AvaliacaoController extends Controller
 {
     public function store(Request $request) {
 
-        $message = [
-            'alu_id.required' => 'O campo ID do Aluno é obrigatório.',
-            'ava_diagn_clinico.required' => 'O campo Diagnóstico Clínico é obrigatório.',
-            'ava_queixa_principal.required' => 'O campo Queixa Principal é obrigatório.',
-            'ava_hda.required' => 'O campo HDA é obrigatório.',
-            'ava_hpp.required' => 'O campo HPP é obrigatório.',
-            'ava_ex_complementar.required' => 'O campo Exame Complementar é obrigatório.',
-            'ava_inspecao.required' => 'O campo Inspeção é obrigatório.',
-            'ava_palpacao.required' => 'O campo Palpação é obrigatório.',
-            'ava_teste_articular.required' => 'O campo Teste Articular é obrigatório.',
-            'ava_teste_muscular.required' => 'O campo Teste Muscular é obrigatório.',
-            'ava_medico.required' => 'O campo Médico é obrigatório.',
-            'ava_crm.required' => 'O campo CRM é obrigatório.',
-            'ava_especialidade.required' => 'O campo Especialidade é obrigatório.',
-            'ava_med_fone.required' => 'O campo Telefone do Médico é obrigatório.',
-        ];
-    
-        $request->validate([
-            'alu_id' => 'required',
-            'ava_diagn_clinico' => 'required',
-            'ava_queixa_principal' => 'required',
-            'ava_hda' => 'required',
-            'ava_hpp' => 'required',
-            'ava_ex_complementar' => 'required',
-            'ava_inspecao' => 'required',
-            'ava_palpacao' => 'required',
-            'ava_teste_articular' => 'required',
-            'ava_teste_muscular' => 'required',
-            'ava_medico' => 'required',
-            'ava_crm' => 'required',
-            'ava_especialidade' => 'required',
-            'ava_med_fone' => 'required',
-        ], $message);
-
+       
         $avaliacao = new Avaliacao();
 
 

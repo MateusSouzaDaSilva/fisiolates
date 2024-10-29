@@ -13,20 +13,20 @@ return new class extends Migration
     {
         Schema::create('avaliacao', function (Blueprint $table) {
             $table->id();
-            $table->string('ava_diagn_clinico');
-            $table->string('ava_queixa_principal');
-            $table->string('ava_hda');
-            $table->string('ava_hpp');
-            $table->string('ava_ex_complementar');
-            $table->string('ava_inspecao');
-            $table->string('ava_palpacao');
-            $table->string('ava_teste_articular');
-            $table->string('ava_teste_muscular');
-            $table->string('ava_medico');
-            $table->integer('ava_crm');
-            $table->string('ava_especialidade');
-            $table->string('ava_med_fone');
-            $table->unsignedBigInteger('alu_id');
+            $table->string('ava_diagn_clinico')->nullable();
+            $table->string('ava_queixa_principal')->nullable();
+            $table->string('ava_hda')->nullable();
+            $table->string('ava_hpp')->nullable();
+            $table->string('ava_ex_complementar')->nullable();
+            $table->string('ava_inspecao')->nullable();
+            $table->string('ava_palpacao')->nullable();
+            $table->string('ava_teste_articular')->nullable();
+            $table->string('ava_teste_muscular')->nullable();
+            $table->string('ava_medico')->nullable();
+            $table->integer('ava_crm')->nullable();
+            $table->string('ava_especialidade')->nullable();
+            $table->string('ava_med_fone')->nullable();
+            $table->unsignedBigInteger('alu_id')->nullable();
             $table->timestamps();
 
             $table->foreign('alu_id')->references('id')->on('alunos')->onDelete('cascade');
