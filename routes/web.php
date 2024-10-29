@@ -43,6 +43,7 @@ Route::middleware([
 
     Route::post('/aluno/{id}/pagou', [AlunoController::class, 'pagou'])->name('aluno.pagou');
 
+    Route::middleware(['auth'])->get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 });
 
 Route::middleware([
