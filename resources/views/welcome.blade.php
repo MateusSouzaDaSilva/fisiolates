@@ -34,7 +34,7 @@
                             @foreach ($agendamentos as $agendamento)
                                 @if ($agendamento->age_day == $day && $agendamento->age_time == sprintf('%02d:00:00', $hour))
                                     <div class="event event-class" data-event-id="{{ $agendamento->id }}">
-                                        {{ $agendamento->aluno->alu_nome }} {{ $agendamento->aluno->alu_sobrenome }}
+                                        {{ $agendamento->aluno->alu_nome }}
                                     </div>
                                 @endif
                             @endforeach
