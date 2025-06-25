@@ -127,11 +127,11 @@ jobs:
         #Login to the Docker Registry (ECR)
         $SSH_COMMAND "aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ECR_REGISTRY"
         
-        # Copy docker-compose.yml to EC2 server
-        $SCP_COMMAND docker-compose.yml $EC2_USER@$EC2_HOST:/home/centos/docker/
+        # Copy compose.yml to EC2 server
+        $SCP_COMMAND compose.yml $EC2_USER@$EC2_HOST:/home/centos/docker/
         
         # Pull and run the Docker container on EC2
-        $SSH_COMMAND "cd /home/ubuntu/docker/ && docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && docker compose -f docker-compose.yml up -d --force-recreate"
+        $SSH_COMMAND "cd /home/ubuntu/docker/ && docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && docker compose -f compose.yml up -d --force-recreate"
         
         # Cleanup PEM key
         rm -f ec2.pem
