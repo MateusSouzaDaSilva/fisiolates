@@ -165,24 +165,24 @@ jobs:
   
     - name: Create destination directory
       run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@$EC2_HOST "mkdir -p /home/ubuntu/docker/ && chmod 755 /home/ubuntu/docker/"
+        ssh -o StrictHostKeyChecking=no ubuntu@EC2_HOST "mkdir -p /home/ubuntu/docker/ && chmod 755 /home/ubuntu/docker/"
 
     - name: Fix directory permissions
       run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@$EC2_HOST "sudo chown ubuntu:ubuntu /home/ubuntu/docker/ && sudo chmod 755 /home/ubuntu/docker/"
+        ssh -o StrictHostKeyChecking=no ubuntu@EC2_HOST "sudo chown ubuntu:ubuntu /home/ubuntu/docker/ && sudo chmod 755 /home/ubuntu/docker/"
 
     - name: Debug remote directory
       run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@$EC2_HOST "ls -ld /home/ubuntu/docker/ || echo 'Directory does not exist or is inaccessible'"
+        ssh -o StrictHostKeyChecking=no ubuntu@EC2_HOST "ls -ld /home/ubuntu/docker/ || echo 'Directory does not exist or is inaccessible'"
 
   
     - name: Check disk space
       run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@$EC2_HOST "df -h /home/ubuntu/"
+        ssh -o StrictHostKeyChecking=no ubuntu@EC2_HOST "df -h /home/ubuntu/"
 
     - name: Copy compose.yaml to remote server
       run: |
-        scp -v -o StrictHostKeyChecking=no compose.yaml ubuntu@$EC2_HOST:/home/ubuntu/docker/
+        scp -v -o StrictHostKeyChecking=no compose.yaml ubuntu@EC2_HOST:/home/ubuntu/docker/
 
         # # Copy docker-compose.yml to EC2 server
         # $SCP_COMMAND compose.yaml $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
