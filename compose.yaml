@@ -5,7 +5,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        image: laravel-app
+        image: 833779331988.dkr.ecr.us-east-2.amazonaws.com/fisiolates:latest
         container_name: laravel_app
         restart: unless-stopped
         ports:
