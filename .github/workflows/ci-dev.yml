@@ -153,19 +153,21 @@ jobs:
         # Save PEM key to file and set permissions
         echo "$EC2_PEM_KEY" > ec2.pem
         chmod 400 ec2.pem
+        # ssh -i ec2.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.  EC2_HOST }} "sudo usermod -aG docker ubuntu"
+
 
         # SSH, SCP commands
         SSH_COMMAND="ssh -i ec2.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST"
         SCP_COMMAND="scp -i ec2.pem -o StrictHostKeyChecking=no"
 
-        #Login to the Docker Registry (ECR)
-        $SSH_COMMAND "aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ECR_REGISTRY"
-
-        # Copy compose.yaml to EC2 server
+        #Login to Docker registry
+        $SSH_COMMAND "aws ecr get-login-password --region us-east-2 | sudo docker login --username AWS --password-stdin $ECR_REGISTRY"
+ 
+        # Copy docker-compose.yml to EC2 server
         $SCP_COMMAND compose.yaml $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
         
         # Pull and run the Docker container on EC2
-        $SSH_COMMAND "cd /home/ubuntu/docker/ && docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && docker compose -f compose.yaml up -d --force-recreate"
+        $SSH_COMMAND "cd /home/ubuntu/docker/ && sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && docker compose -f compose.yaml up -d --force-recreate"
         
         # Cleanup PEM key
         rm -f ec2.pem
