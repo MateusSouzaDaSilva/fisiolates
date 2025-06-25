@@ -127,7 +127,8 @@ jobs:
         #Login to the Docker Registry (ECR)
         $SSH_COMMAND "aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ECR_REGISTRY"
 
-        ssh -o StrictHostKeyChecking=no centos@$EC2_HOST "mkdir -p /home/centos/docker/"
+        #Creating directory and fixing permissions
+        ssh -o StrictHostKeyChecking=no centos@$EC2_HOST "sudo mkdir -p /home/centos/docker/ && sudo chown centos:centos /home/centos/docker/ && chmod 755 /home/centos/docker/"
         
         # Copy compose.yaml to EC2 server
         $SCP_COMMAND compose.yaml $EC2_USER@$EC2_HOST:/home/centos/docker/
