@@ -163,22 +163,22 @@ jobs:
         #Login to Docker registry
         $SSH_COMMAND "aws ecr get-login-password --region us-east-2 | sudo docker login --username AWS --password-stdin $ECR_REGISTRY"
   
-    - name: Create destination directory
-      run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.  EC2_HOST }} "mkdir -p /home/ubuntu/docker/ && chmod 755 /home/ubuntu/docker/"
+    # - name: Create destination directory
+    #   run: |
+    #     ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "mkdir -p /home/ubuntu/docker/ && chmod 755 /home/ubuntu/docker/"
 
-    - name: Fix directory permissions
-      run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.  EC2_HOST }} "sudo chown ubuntu:ubuntu /home/ubuntu/docker/ && sudo chmod 755 /home/ubuntu/docker/"
+    # - name: Fix directory permissions
+    #   run: |
+    #     ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "sudo chown ubuntu:ubuntu /home/ubuntu/docker/ && sudo chmod 755 /home/ubuntu/docker/"
 
-    - name: Debug remote directory
-      run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.  EC2_HOST }} "ls -ld /home/ubuntu/docker/ || echo 'Directory does not exist or is inaccessible'"
+    # - name: Debug remote directory
+    #   run: |
+    #     ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.  EC2_HOST }} "ls -ld /home/ubuntu/docker/ || echo 'Directory does not exist or is inaccessible'"
 
   
-    - name: Check disk space
-      run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.  EC2_HOST }} "df -h /home/ubuntu/"
+    # - name: Check disk space
+    #   run: |
+    #     ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.  EC2_HOST }} "df -h /home/ubuntu/"
 
     - name: Copy compose.yaml to remote server
       env:
