@@ -14,6 +14,24 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0 # Necessary to fetch all tags and history
+    
+################################################################
+###               SONAR CLOUD SCAN                           ###
+### Drops the build if any bugs or vulnerabilities are found.###
+###            Using the default quality gate.               ###
+###        Connected to my personal Sonar Cloud account      ###
+################################################################
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    - name: Setup Git
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
 
 ################################################################
 ###               DETERMINE NEXT VERSION                     ###
@@ -90,6 +108,22 @@ jobs:
         echo "IMAGE_NAME=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
 ###########################################################
+###  Docker image Snyk scan | If fails, drop the action ###
+###       Connected to my personal Snyk account         ###
+###     The code owner receives an email notification   ###
+### Possible to configure Slack notification if needed  ###
+###########################################################               
+               
+    # - name: Run Snyk to check Docker image for vulnerabilities
+    #   uses: snyk/actions/docker@master
+    #   env:
+    #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    #   with:
+    #      image: ${{ env.IMAGE_NAME }}
+    #      args: --severity-threshold=high --policy-path=.snyk
+    #   continue-on-error: false
+
+###########################################################
 ###                  PUSH IMAGE TO ECR                  ###
 ###     Tag Docker image as "latest" and push to ECR    ###
 ########################################################### 
@@ -106,3 +140,62 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         # Push the latest tag
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+    - name: Deploy to EC2
+      env:
+        EC2_PEM_KEY: ${{ secrets.EC2_PEM_KEY }}
+        EC2_HOST: ${{ secrets.EC2_HOST }}
+        EC2_USER: ${{ secrets.EC2_USER }}
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: fisiolates
+        IMAGE_TAG: ${{ steps.next_version.outputs.tag }}
+      run: |
+        # Save PEM key to file and set permissions
+        echo "$EC2_PEM_KEY" > ec2.pem
+        chmod 400 ec2.pem
+        # ssh -i ec2.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.  EC2_HOST }} "sudo usermod -aG docker ubuntu"
+
+
+        # SSH, SCP commands
+        SSH_COMMAND="ssh -i ec2.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST"
+        SCP_COMMAND="scp -i ec2.pem -o StrictHostKeyChecking=no"
+
+        #Login to Docker registry
+        $SSH_COMMAND "aws ecr get-login-password --region us-east-2 | sudo docker login --username AWS --password-stdin $ECR_REGISTRY"
+  
+    - name: Create destination directory
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.  EC2_HOST }} "mkdir -p /home/ubuntu/docker/ && chmod 755 /home/ubuntu/docker/"
+
+    - name: Fix directory permissions
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.  EC2_HOST }} "sudo chown ubuntu:ubuntu /home/ubuntu/docker/ && sudo chmod 755 /home/ubuntu/docker/"
+
+    - name: Debug remote directory
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.  EC2_HOST }} "ls -ld /home/ubuntu/docker/ || echo 'Directory does not exist or is inaccessible'"
+
+  
+    - name: Check disk space
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.  EC2_HOST }} "df -h /home/ubuntu/"
+
+    - name: Copy compose.yaml to remote server
+      env:
+        EC2_PEM_KEY: ${{ secrets.EC2_PEM_KEY }}
+        EC2_HOST: ${{ secrets.EC2_HOST }}
+        EC2_USER: ${{ secrets.EC2_USER }}
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: fisiolates
+        IMAGE_TAG: ${{ steps.next_version.outputs.tag }}
+      run: |
+        scp -v -o StrictHostKeyChecking=no compose.yaml ubuntu@${{ secrets.  EC2_HOST }}:/home/ubuntu/docker/
+
+        # # Copy docker-compose.yml to EC2 server
+        # $SCP_COMMAND compose.yaml $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
+        
+        # Pull and run the Docker container on EC2
+        $SSH_COMMAND "cd /home/ubuntu/docker/ && sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && docker compose -f compose.yaml up -d --force-recreate"
+        
+        # Cleanup PEM key
+        rm -f ec2.pem
