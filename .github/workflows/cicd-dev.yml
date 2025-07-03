@@ -191,16 +191,12 @@ jobs:
       run: |
         echo "$EC2_PEM_KEY" > ec2.pem
         chmod 400 ec2.pem
-        
+
+        SSH_COMMAND="ssh -i ec2.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST"
+ 
         scp -i ec2.pem -o StrictHostKeyChecking=no compose.yaml $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
  
-
-        # # Copy docker-compose.yml to EC2 server
-       
-        $SCP_COMMAND compose.yaml $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
-        
-        # Pull and run the Docker container on EC2
         $SSH_COMMAND "cd /home/ubuntu/docker/ && sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && docker compose -f compose.yaml up -d --force-recreate"
-        
-        # Cleanup PEM key
+ 
         rm -f ec2.pem
+ 
