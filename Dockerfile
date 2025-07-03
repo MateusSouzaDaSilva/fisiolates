@@ -30,6 +30,7 @@ WORKDIR /var/www
 
 # Copia o código do projeto (exceto node_modules, já buildados)
 COPY . .
+COPY .env .
 
 # Copia os assets buildados da stage 1
 COPY --from=node-builder /var/www/public/build ./public/build
