@@ -189,7 +189,8 @@ jobs:
         ECR_REPOSITORY: fisiolates
         IMAGE_TAG: ${{ steps.next_version.outputs.tag }}
       run: |
-        scp -v -o StrictHostKeyChecking=no compose.yaml ubuntu@${{ secrets.  EC2_HOST }}:/home/ubuntu/docker/
+        scp -i ec2.pem -o StrictHostKeyChecking=no compose.yaml $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
+ 
 
         # # Copy docker-compose.yml to EC2 server
         # $SCP_COMMAND compose.yaml $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
