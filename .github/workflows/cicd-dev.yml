@@ -168,7 +168,7 @@ jobs:
         $SSH_COMMAND "mkdir -p /home/ubuntu/docker/ && sudo chown ubuntu:ubuntu /home/ubuntu/docker/"
     
         # Copia o compose.yaml
-        $SCP_COMMAND compose.yaml $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
+        $SCP_COMMAND compose.yaml .env $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
     
         # Login no ECR
         $SSH_COMMAND "aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ECR_REGISTRY"
