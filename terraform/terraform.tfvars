@@ -1,2 +1,2 @@
-testedevops2 = "testedevops2"
+fisiolates-aws-key = "fisiolates-aws-key"
  

@@ -10,7 +10,7 @@ resource "aws_ecr_repository" "app_repo" {
 resource "aws_instance" "app_ec2" {
   ami                         = "ami-0c55b159cbfafe1f0"
   instance_type               = "t2.micro"
-  key_name                    = var.testedevops2
+  key_name                    = var.fisiolates-aws-key
   associate_public_ip_address = true
 
   tags = {

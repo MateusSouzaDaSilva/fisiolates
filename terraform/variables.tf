@@ -1,5 +1,5 @@
-variable "testedevops2" {
-  description = "testedevops2"
+variable "fisiolates-aws-key" {
+  description = "fisiolates-aws-key"
   type        = string
 }
  
