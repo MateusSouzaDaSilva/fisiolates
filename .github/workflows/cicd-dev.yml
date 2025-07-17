@@ -34,6 +34,48 @@ jobs:
         git config --global user.email 'github-actions@github.com'
 
 ################################################################
+###               TERRAFORM                                  ###
+### Drops the build if any bugs or vulnerabilities are found.###
+###            Using the default quality gate.               ###
+###        Connected to my personal Sonar Cloud account      ###
+################################################################
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.7
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ./terraform
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: Terraform Plan
+      run: terraform plan -out=tfplan -var="testedevops2=testedevops2"
+      working-directory: ./terraform
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve tfplan
+      working-directory: ./terraform
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: Get Terraform Outputs
+      id: tf_outputs
+      run: |
+        cd terraform
+        EC2_IP=$(terraform output -raw ec2_public_ip | tr -d '\r\n' | xargs)
+        ECR_REPO=$(terraform output -raw ecr_url | tr -d '\r\n' | xargs)
+        echo EC2_IP=$EC2_IP >> $GITHUB_ENV
+        echo ECR_REPO=$ECR_REPO >> $GITHUB_ENV'
+
+################################################################
 ###               DETERMINE NEXT VERSION                     ###
 ###   Used for creating new releases and image tags          ###
 ################################################################
@@ -150,7 +192,7 @@ jobs:
     - name: Deploy to EC2
       env:
         EC2_PEM_KEY: ${{ secrets.EC2_PEM_KEY }}
-        EC2_HOST: ${{ secrets.EC2_HOST }}
+        EC2_HOST: ${{ env.EC2_IP }}
         EC2_USER: ${{ secrets.EC2_USER }}
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: fisiolates
