@@ -43,6 +43,7 @@ jobs:
         terraform_version: 1.5.7
 
     - name: Terraform Init
+      if: vars.INFRA_PROVISIONED != 'true'
       run: terraform init
       working-directory: ./terraform
       env:
