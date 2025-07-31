@@ -75,6 +75,10 @@ jobs:
           -d '{"name":"INFRA_PROVISIONED","value":"true"}' \
           https://api.github.com/repos/${{ github.repository }}/actions/variables/INFRA_PROVISIONED
 
+    - name: Terraform refresh
+      run: terraform refresh
+      working-directory: ./terraform
+    
     - name: Get Terraform Outputs
       id: tf_outputs
       run: |
