@@ -83,10 +83,19 @@ jobs:
       id: tf_outputs
       run: |
         cd terraform
-        EC2_IP=$(terraform output -raw ec2_public_ip | tr -d '\r\n' | xargs)
-        ECR_REPO=$(terraform output -raw ecr_url | tr -d '\r\n' | xargs)
-        echo EC2_IP=$EC2_IP >> $GITHUB_ENV
-        echo ECR_REPO=$ECR_REPO >> $GITHUB_ENV
+        IP_REGEX='[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'
+        EC2_IP=$(terraform output -raw ec2_public_ip | grep -oE "$IP_REGEX" | tail -n 1)
+
+        ECR_REGEX='[0-9]+\.dkr\.ecr\.[a-z0-9-]+\.amazonaws\.com/[a-zA-Z0-9._-]+'
+        ECR_REPO=$(terraform output -raw ecr_url | grep -oE "$ECR_REGEX" | tail -n 1)
+
+        # Log para verificação dos valores filtrados
+        echo "=========================================="
+        echo "== IP Filtrado: $EC2_IP =="
+        echo "== ECR Filtrado: $ECR_REPO =="
+        echo "=========================================="
+        echo "ec2_ip=$EC2_IP" >> $GITHUB_OUTPUT
+        echo "ecr_repo=$ECR_REPO" >> $GITHUB_OUTPUT
 
 ################################################################
 ###               DETERMINE NEXT VERSION                     ###
@@ -204,7 +213,7 @@ jobs:
     - name: Deploy to EC2
       env:
         EC2_PEM_KEY: ${{ secrets.EC2_PEM_KEY }}
-        EC2_HOST: ${{ env.EC2_IP }}
+        EC2_HOST: ${{ steps.tf_outputs.outputs.ec2_ip }}
         EC2_USER: ${{ secrets.EC2_USER }}
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: fisiolates
