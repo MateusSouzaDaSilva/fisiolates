@@ -6,13 +6,6 @@ provider "aws" {
 }
 
 
-terraform {
-  backend "s3" {
-    bucket         = "my-terraform-state-bucket"
-    key            = "state/terraform.tfstate"
-    region         = "us-east-2"
-  }
-}
 
 resource "aws_ecr_repository" "app_repo" {
   name = "fisiolates"
