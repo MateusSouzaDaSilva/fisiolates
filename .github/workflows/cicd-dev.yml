@@ -212,34 +212,42 @@ jobs:
 
     - name: Install Docker and AWS CLI on EC2
       env:
+        EC2_PEM_KEY: ${{ secrets.EC2_PEM_KEY }}
+        EC2_HOST: ${{ steps.tf_outputs.outputs.ec2_ip }}
         EC2_USER: ${{ secrets.EC2_USER }}
       run: |
-        # Add Docker's official GPG key:
-          sudo apt-get update
-          sudo apt-get install ca-certificates curl gnupg
-          sudo install -m 0755 -d /etc/apt/keyrings
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-          sudo chmod a+r /etc/apt/keyrings/docker.gpg
+        # Salva a chave PEM temporariamente
+        echo "$EC2_PEM_KEY" > ec2.pem
+        chmod 400 ec2.pem
 
-        # Add the repository to Apt sources:
-          echo \
-            "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-            "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        # Define o comando SSH
+        SSH_COMMAND="ssh -i ec2.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST"
 
-          sudo apt-get update
+        # Atualiza pacotes e instala dependências básicas
+        $SSH_COMMAND "sudo apt-get update && sudo apt-get install -y ca-certificates curl gnupg unzip"
 
-          sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+        # Instala o Docker
+        $SSH_COMMAND "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+          sudo chmod a+r /etc/apt/keyrings/docker.gpg && \
+          echo 'deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable' | \
+          sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+          sudo apt-get update && \
+          sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
+          sudo usermod -aG docker $EC2_USER && \
+          sudo systemctl enable docker && \
+          sudo systemctl start docker"
 
-          sudo usermod -aG docker $EC2_USER
-          sudo systemctl enable docker
-          sudo systemctl start docker
-
-        # Install AWS CLI v2 on EC2
+        # Instala a AWS CLI v2
         $SSH_COMMAND "curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip' && \
           unzip -q awscliv2.zip && \
           sudo ./aws/install && \
           rm -rf aws awscliv2.zip"
+
+        # Verifica se a instalação foi bem-sucedida
+        $SSH_COMMAND "docker --version && aws --version"
+
+        # Remove a chave PEM
+        rm -f ec2.pem
       
     - name: Deploy to EC2
       env:
