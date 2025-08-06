@@ -60,7 +60,7 @@ resource "aws_instance" "app_ec2" {
   key_name                    = var.fisiolates-aws-key
   associate_public_ip_address = true
   iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name # Associa o IAM Role
-  vpc_security_group_ids     = [aws_security_group.allow_ssh.id]
+
 
   # Script de user data para instalar Docker e AWS CLI
   user_data = <<-EOF
