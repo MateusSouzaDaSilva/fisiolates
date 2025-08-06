@@ -210,37 +210,6 @@ jobs:
         # Push the latest tag
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-    - name: Install Docker and AWS CLI on EC2
-      env:
-        EC2_PEM_KEY: ${{ secrets.EC2_PEM_KEY }}
-        EC2_HOST: ${{ steps.tf_outputs.outputs.ec2_ip }}
-        EC2_USER: ${{ secrets.EC2_USER }}
-      run: |
-        echo "$EC2_PEM_KEY" > ec2.pem
-        chmod 400 ec2.pem
-        SSH_COMMAND="ssh -i ec2.pem -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -o ServerAliveCountMax=3 $EC2_USER@$EC2_HOST"
-        $SSH_COMMAND "echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections"
-        $SSH_COMMAND "sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl gnupg unzip"
-        $SSH_COMMAND "sudo mkdir -p /etc/apt/keyrings"
-        $SSH_COMMAND "sudo chown $EC2_USER:$EC2_USER /home/$EC2_USER/.gnupg"
-        $SSH_COMMAND "curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o docker.gpg && \
-          sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg docker.gpg && \
-          sudo chmod a+r /etc/apt/keyrings/docker.gpg && \
-          rm docker.gpg && \
-          echo 'deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable' | \
-          sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-          sudo apt-get update && \
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
-          sudo usermod -aG docker $EC2_USER && \
-          sudo systemctl enable docker && \
-          sudo systemctl start docker"
-        $SSH_COMMAND "curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip' && \
-          unzip -q awscliv2.zip && \
-          sudo ./aws/install && \
-          rm -rf aws awscliv2.zip"
-        $SSH_COMMAND "docker --version && aws --version"
-        rm -f ec2.pem
-
     - name: Deploy to EC2
       env:
         EC2_PEM_KEY: ${{ secrets.EC2_PEM_KEY }}
