@@ -1,14 +1,57 @@
-
-
 provider "aws" {
   region = "us-east-2"
   
 }
 
-
-
 resource "aws_ecr_repository" "app_repo" {
   name = "fisiolates"
+}
+
+
+# IAM Role para o EC2
+resource "aws_iam_role" "ec2_role" {
+  name = "ec2_fisiolates_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+# Política para acesso ao ECR
+resource "aws_iam_role_policy" "ec2_ecr_policy" {
+  name = "ec2_ecr_policy"
+  role = aws_iam_role.ec2_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetAuthorizationToken"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# Perfil de instância para o EC2
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "ec2_fisiolates_instance_profile"
+  role = aws_iam_role.ec2_role.name
 }
 
 resource "aws_instance" "app_ec2" {
@@ -16,6 +59,8 @@ resource "aws_instance" "app_ec2" {
   instance_type               = "t2.micro"
   key_name                    = var.fisiolates-aws-key
   associate_public_ip_address = true
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name # Associa o IAM Role
+  vpc_security_group_ids     = [aws_security_group.allow_ssh.id]
 
   # Script de user data para instalar Docker e AWS CLI
   user_data = <<-EOF
