@@ -94,6 +94,17 @@ resource "aws_instance" "app_ec2" {
     ./aws/install
     rm -rf aws awscliv2.zip
 
+    # Faz login no ECR
+    aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin ***.dkr.ecr.us-east-2.amazonaws.com
+    if [ $? -ne 0 ]; then
+      echo "Erro ao fazer login no ECR" >&2
+      exit 1
+    fi
+
+    # Corrige permissões do config.json
+    chown ubuntu:ubuntu /home/ubuntu/.docker/config.json
+    chmod 600 /home/ubuntu/.docker/config.json
+
     # Verifica as instalações
     docker --version
     aws --version
