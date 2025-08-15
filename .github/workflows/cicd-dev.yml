@@ -229,7 +229,7 @@ jobs:
         SCP_COMMAND="scp -i ec2.pem -o StrictHostKeyChecking=no"
     
         # Cria diretório no EC2 (se não existir)
-        $SSH_COMMAND "mkdir -p /home/ubuntu/docker/ && sudo chown ubuntu:ubuntu /home/ubuntu/docker/"
+        $SSH_COMMAND "mkdir -p /home/ubuntu/docker/ && chown ubuntu:ubuntu /home/ubuntu/docker/"
 
         # Corrige permissões do config.json
         chown ubuntu:ubuntu /home/ubuntu/.docker/config.json
