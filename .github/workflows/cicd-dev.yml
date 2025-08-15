@@ -220,10 +220,6 @@ jobs:
         IMAGE_TAG: ${{ steps.next_version.outputs.tag }}
       run: |
 
-        # Corrige permissões do config.json
-        chown ubuntu:ubuntu /home/ubuntu/.docker/config.json
-        chmod 600 /home/ubuntu/.docker/config.json
-        
         # Salva PEM
         echo "$EC2_PEM_KEY" > ec2.pem
         chmod 400 ec2.pem
@@ -234,6 +230,10 @@ jobs:
     
         # Cria diretório no EC2 (se não existir)
         $SSH_COMMAND "mkdir -p /home/ubuntu/docker/ && sudo chown ubuntu:ubuntu /home/ubuntu/docker/"
+
+        # Corrige permissões do config.json
+        chown ubuntu:ubuntu /home/ubuntu/.docker/config.json
+        chmod 600 /home/ubuntu/.docker/config.json
     
         # Copia o compose.yaml
         $SCP_COMMAND compose.yaml .env $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
