@@ -55,7 +55,7 @@ resource "aws_iam_instance_profile" "ec2_instance_profile" {
 }
 
 resource "aws_instance" "app_ec2" {
-  ami                         = "ami-0c55b159cbfafe1f0"
+  ami                         = "ami-0d1b5a8c13042c939"
   instance_type               = "t2.micro"
   key_name                    = var.fisiolates-aws-key
   associate_public_ip_address = true
