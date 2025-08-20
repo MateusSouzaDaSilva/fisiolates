@@ -162,6 +162,10 @@ jobs:
         echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
         echo "::set-output name=repo_name::$REPO_NAME"
 
+    - name: Set .env
+      id: vars
+      run: |
+        echo "${{ vars.ENV_DEV }}" > .env
 
     - name: Build Docker image      
       env:
@@ -172,10 +176,9 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         echo "IMAGE_NAME=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
-    - name: Set variables
+    - name: Set IMAGE_NAME
       id: vars
       run: |
-        echo "${{ vars.ENV_DEV }}" > .env
         echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" >> .env
 
 ###########################################################
