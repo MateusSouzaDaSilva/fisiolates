@@ -232,8 +232,8 @@ jobs:
         $SSH_COMMAND "mkdir -p /home/ubuntu/docker/ && chown ubuntu:ubuntu /home/ubuntu/docker/"
 
         # Corrige permissões do config.json
-        chown ubuntu:ubuntu /home/ubuntu/.docker/config.json
-        chmod 600 /home/ubuntu/.docker/config.json
+        $SSH_COMMAND "chown ubuntu:ubuntu /home/ubuntu/.docker/config.json"
+        $SSH_COMMAND "chmod 600 /home/ubuntu/.docker/config.json"
     
         # Copia o compose.yaml
         $SCP_COMMAND compose.yaml .env $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
