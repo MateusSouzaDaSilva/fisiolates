@@ -162,10 +162,6 @@ jobs:
         echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
         echo "::set-output name=repo_name::$REPO_NAME"
 
-    - name: Set variables
-      id: vars
-      run: |
-        echo "${{ vars.ENV_DEV }}" > .env
 
     - name: Build Docker image      
       env:
@@ -175,6 +171,12 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         echo "IMAGE_NAME=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+
+    - name: Set variables
+      id: vars
+      run: |
+        echo "${{ vars.ENV_DEV }}" > .env
+        echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" >> .env
 
 ###########################################################
 ###  Docker image Snyk scan | If fails, drop the action ###
@@ -219,32 +221,26 @@ jobs:
         ECR_REPOSITORY: fisiolates
         IMAGE_TAG: ${{ steps.next_version.outputs.tag }}
       run: |
-
+ 
         # Salva PEM
         echo "$EC2_PEM_KEY" > ec2.pem
         chmod 400 ec2.pem
-    
         # Comandos SSH/SCP
         SSH_COMMAND="ssh -i ec2.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST"
         SCP_COMMAND="scp -i ec2.pem -o StrictHostKeyChecking=no"
-    
         # Cria diretório no EC2 (se não existir)
         $SSH_COMMAND "mkdir -p /home/ubuntu/docker/ && chown ubuntu:ubuntu /home/ubuntu/docker/"
-
+ 
         # Corrige permissões do config.json
         # $SSH_COMMAND "chown ubuntu:ubuntu /home/ubuntu/.docker/config.json"
         # $SSH_COMMAND "chmod 600 /home/ubuntu/.docker/config.json"
-    
         # Copia o compose.yaml
-        $SCP_COMMAND Dockefile compose.yaml .env $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
-    
+        $SCP_COMMAND compose.prod.yaml .env $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
         # Login no ECR
         $SSH_COMMAND "aws ecr get-login-password --region us-east-2 | sudo docker login --username AWS --password-stdin $ECR_REGISTRY"
-    
         # Pull da imagem e sobe os containers
         $SSH_COMMAND "cd /home/ubuntu/docker/ && \
           sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && \
-          docker compose -f compose.yaml up -d --force-recreate"
-    
+          sudo docker compose -f compose.prod.yaml up -d --force-recreate"
         # Remove PEM
         rm -f ec2.pem
