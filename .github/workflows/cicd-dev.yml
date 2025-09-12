@@ -68,17 +68,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-    - name: Mark Infrastructure as Provisioned
-      if: vars.INFRA_PROVISIONED != 'true'
-      env:
-        GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_2 }}
-      run: |
-        gh variable set INFRA_PROVISIONED -R ${{ github.repository }} --body "true" 
 
-    # - name: Terraform refresh
-    #   run: terraform refresh
-    #   working-directory: ./terraform
-    
     - name: Get Terraform Outputs
       if: vars.INFRA_PROVISIONED != 'true'
       id: tf_outputs
@@ -102,6 +92,12 @@ jobs:
 
         gh variable set EC2_SAVED_IP -R ${{ github.repository }} --body "$EC2_IP" 
 
+    - name: Mark Infrastructure as Provisioned
+      if: vars.INFRA_PROVISIONED != 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_2 }}
+      run: |
+        gh variable set INFRA_PROVISIONED -R ${{ github.repository }} --body "true" 
    
 
 ################################################################
